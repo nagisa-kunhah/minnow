@@ -6,7 +6,10 @@ class Reassembler
 {
 public:
   // Construct Reassembler to write into given ByteStream.
-  explicit Reassembler( ByteStream&& output ) : output_( std::move( output ) ) {}
+  explicit Reassembler( ByteStream&& output ) : output_( std::move( output ) ) {
+    unReassemble_.resize(output_.writer().available_capacity());
+    cap_=output_.writer().available_capacity();
+  }
 
   /*
    * Insert a new substring to be reassembled into a ByteStream.
@@ -41,5 +44,11 @@ public:
   const Writer& writer() const { return output_.writer(); }
 
 private:
+  uint64_t finishIdx=UINT64_MAX;
+  uint64_t cap_{};
+  uint64_t front_{};
+  uint64_t lastIdx_{};
+  std::vector<std::tuple<bool,uint64_t,char>>unReassemble_{};
+  // std::set<std::tuple<uint64_t,char>>unReassemble_{};
   ByteStream output_; // the Reassembler writes to this ByteStream
 };

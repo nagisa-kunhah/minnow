@@ -4,7 +4,10 @@
 #include <string>
 #include <vector>
 #include <string_view>
+#include <algorithm>
 #include <cassert>
+#include <tuple>
+#include <set>
 #include <iostream>
 
 class Reader;
