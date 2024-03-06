@@ -10,6 +10,7 @@
 #include <optional>
 #include <queue>
 #include <sstream>
+#include <iostream>
 #include <utility>
 
 const unsigned int DEFAULT_TEST_WINDOW = 137;

@@ -48,4 +48,13 @@ private:
   ByteStream input_;
   Wrap32 isn_;
   uint64_t initial_RTO_ms_;
+  size_t windowsSize_{0};
+  bool windowsSizeHaveSet{false};
+  bool hasSyn_{false};
+  bool hasFin_{false};
+  uint64_t lastSeq_{0};
+  uint64_t lastACK_{0};
+  uint64_t consecutiveRetryNum_{0};
+  uint64_t retransmissionTimer_{0};
+  std::deque<TCPSenderMessage>data_{};
 };

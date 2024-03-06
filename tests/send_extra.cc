@@ -39,7 +39,7 @@ int main()
       test.execute( ExpectMessage {}.with_payload_size( 3 ).with_data( "abc" ).with_seqno( isn + 1 ) );
       test.execute( ExpectNoSegment {} );
     }
-
+    std::cerr<<"pass 1!!!!!!!!!!!!!!!!!!!!"<<std::endl;
     {
       TCPConfig cfg;
       const Wrap32 isn( rd() );
@@ -63,7 +63,7 @@ int main()
       test.execute( ExpectMessage {}.with_payload_size( 3 ).with_data( "abc" ).with_seqno( isn + 1 ) );
       test.execute( ExpectNoSegment {} );
     }
-
+    std::cerr<<"pass 2!!!!!!!!!!!!!!!!"<<std::endl;
     {
       TCPConfig cfg;
       const Wrap32 isn( rd() );
@@ -88,7 +88,7 @@ int main()
       test.execute( Tick { 2 } );
       test.execute( ExpectMessage {}.with_payload_size( 3 ).with_data( "def" ).with_seqno( isn + 4 ) );
     }
-
+    std::cerr<<"pass 3!!!!!!!!!!!!!!!!"<<std::endl;
     {
       TCPConfig cfg;
       const Wrap32 isn( rd() );
@@ -117,7 +117,7 @@ int main()
       test.execute( ExpectMessage {}.with_payload_size( 3 ).with_data( "abc" ).with_seqno( isn + 1 ) );
       test.execute( ExpectNoSegment {} );
     }
-
+    std::cerr<<"pass 4!!!!!!!!!!!!!!!!"<<std::endl;
     {
       TCPConfig cfg;
       const Wrap32 isn( rd() );
@@ -156,6 +156,7 @@ int main()
       test.execute( ExpectMessage {}.with_payload_size( 3 ).with_data( "def" ).with_seqno( isn + 4 ) );
       test.execute( ExpectNoSegment {} );
     }
+    std::cerr<<"pass 5!!!!!!!!!!!!!!!!"<<std::endl;
     {
       TCPConfig cfg;
       const Wrap32 isn( rd() );
@@ -187,7 +188,7 @@ int main()
                         .with_seqno( isn + 1 + i ) );
       }
     }
-
+    std::cerr<<"pass 6!!!!!!!!!!!!!!!!"<<std::endl;
     {
       TCPConfig cfg;
       const Wrap32 isn( rd() );
@@ -210,7 +211,7 @@ int main()
       test.execute(
         ExpectMessage {}.with_payload_size( 3 ).with_data( "abc" ).with_seqno( isn + 1 ).with_fin( true ) );
     }
-
+    std::cerr<<"pass 7!!!!!!!!!!!!!!!!"<<std::endl;
     {
       TCPConfig cfg;
       const Wrap32 isn( rd() );
@@ -242,7 +243,7 @@ int main()
       test.execute( ExpectMessage {}.with_payload_size( 0 ).with_seqno( isn + 4 ).with_fin( true ) );
       test.execute( ExpectSeqno { isn + 5 } );
     }
-
+    std::cerr<<"pass 8!!!!!!!!!!!!!!!!"<<std::endl;
     {
       TCPConfig cfg;
       const Wrap32 isn( rd() );
@@ -267,7 +268,7 @@ int main()
       test.execute( AckReceived { Wrap32 { isn + 4 } }.with_win( 1 ) );
       test.execute( ExpectMessage {}.with_payload_size( 0 ).with_seqno( isn + 4 ).with_fin( true ) );
     }
-
+    std::cerr<<"pass 9!!!!!!!!!!!!!!!!"<<std::endl;
     {
       TCPConfig cfg;
       const Wrap32 isn( rd() );

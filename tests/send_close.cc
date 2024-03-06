@@ -59,10 +59,15 @@ int main()
       cfg.isn = isn;
 
       TCPSenderTestHarness test { "SYN + FIN", cfg };
+      cerr<<"start 1"<<endl;
       test.execute( Receive { { {}, 1024 } }.without_push() );
+      cerr<<"pass 1"<<endl;
       test.execute( Close {} );
+      cerr<<"pass 2"<<endl;
       test.execute( ExpectMessage {}.with_syn( true ).with_payload_size( 0 ).with_seqno( isn ).with_fin( true ) );
+      cerr<<"pass 3"<<endl;
       test.execute( ExpectSeqno { isn + 2 } );
+      cerr<<"pass 4"<<endl;
       test.execute( ExpectSeqnosInFlight { 2 } );
       test.execute( ExpectNoSegment {} );
       test.execute( HasError { false } );
