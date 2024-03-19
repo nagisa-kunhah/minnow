@@ -13,8 +13,6 @@ uint64_t TCPSender::consecutive_retransmissions() const {
 }
 
 void TCPSender::push(const TransmitFunction& transmit) {
-  cerr << "to push..." << endl;
-  cerr << "now:" << input_.reader().peek() << endl;
   (void)transmit;
   if (!haveSyn_) {
     haveSyn_ = true;
@@ -32,20 +30,11 @@ void TCPSender::push(const TransmitFunction& transmit) {
     outstandingSegments_.push_back(msg);
     transmit(msg);
     timerWork_ = !outstandingSegments_.empty();
-    cerr << "after push 1" << endl;
-    for (auto x : outstandingSegments_) {
-      cerr << x.seqno.raw_value_ << " " << x.SYN << " " << x.FIN << " "
-           << x.payload << endl;
-    }
-    cerr << endl;
     return;
   }
   uint64_t nowWindows = receiverWindows_ > 0 ? receiverWindows_ : 1;
   if (input_.reader().is_finished() && !haveFin_ &&
       nowWindows > Seqno_ - lastAck_) {
-    cerr << "push 2 con:" << endl;
-    cerr << input_.reader().is_finished() << " " << (!haveFin_) << " "
-         << receiverWindows_ << " " << Seqno_ - lastAck_ << endl;
     haveFin_ = true;
     TCPSenderMessage msg;
     msg.FIN = true;
@@ -56,12 +45,6 @@ void TCPSender::push(const TransmitFunction& transmit) {
     outstandingSegments_.push_back(msg);
     transmit(msg);
     timerWork_ = !outstandingSegments_.empty();
-    cerr << "after push 2" << endl;
-    for (auto x : outstandingSegments_) {
-      cerr << x.seqno.raw_value_ << " " << x.SYN << " " << x.FIN << " "
-           << x.payload << endl;
-    }
-    cerr << endl;
     return;
   }
   while (input_.reader().bytes_buffered() != 0 &&
@@ -87,12 +70,6 @@ void TCPSender::push(const TransmitFunction& transmit) {
     transmit(msg);
   }
   timerWork_ = !outstandingSegments_.empty();
-  cerr << "after push 3" << endl;
-  for (auto x : outstandingSegments_) {
-    cerr << x.seqno.raw_value_ << " " << x.SYN << " " << x.FIN << " "
-         << x.payload << endl;
-  }
-  cerr << endl;
 }
 
 TCPSenderMessage TCPSender::make_empty_message() const {
@@ -109,11 +86,7 @@ void TCPSender::receive(const TCPReceiverMessage& msg) {
   if (msg.RST) {
     input_.writer().set_error();
   }
-  cerr << "receive:"
-       << (msg.ackno.has_value() ? msg.ackno.value().raw_value_ : -1) << " "
-       << msg.window_size << endl;
   if (msg.ackno.has_value() && msg.ackno.value().unwrap(isn_, 0) > Seqno_) {
-    cerr << "receive: ignore" << endl;
     return;
   }
   if (msg.ackno.has_value()) {
@@ -129,16 +102,9 @@ void TCPSender::receive(const TCPReceiverMessage& msg) {
       consecutiveRetransmissions_ = 0;
       outstandingSegments_.pop_front();
     }
-    cerr << "after receive:" << ackNo << ", data:" << endl;
-    for (auto x : outstandingSegments_) {
-      cerr << x.seqno.unwrap(isn_, 0) << " " << x.payload << " " << x.SYN << " "
-           << x.FIN << endl;
-    }
-    cerr << "bytes in flight:" << bytesInFlight_ << endl;
   }
   receiverWindows_ = msg.window_size;
   timerWork_ = !outstandingSegments_.empty();
-  cerr << "receive exit" << endl;
 }
 
 void TCPSender::tick(uint64_t ms_since_last_tick,
@@ -147,23 +113,14 @@ void TCPSender::tick(uint64_t ms_since_last_tick,
   (void)ms_since_last_tick;
   (void)transmit;
   (void)initial_RTO_ms_;
-  cerr << "tick:" << ms_since_last_tick << endl;
   if (!timerWork_) {
-    cerr << "tick:"
-         << "not work,exit" << endl;
     return;
   }
   accumulatedTime_ += ms_since_last_tick;
-  cerr << "now accumulated:" << accumulatedTime_ << endl;
-  cerr << "timeout need:" << (initial_RTO_ms_ << consecutiveRetransmissions_)
-       << endl;
   if (accumulatedTime_ >= (initial_RTO_ms_ << consecutiveRetransmissions_)) {
-    cerr << "timeout! Retransmit" << endl;
     transmit(outstandingSegments_.front());
     accumulatedTime_ = 0;
-    cerr << "condition:" << receiverWindows_ << " " << haveSyn_ << endl;
     if (receiverWindows_ != 0 || outstandingSegments_.front().SYN) {
-      cerr << "consecutiveRetransmissions_ up" << endl;
       consecutiveRetransmissions_ += 1;
     }
   }
