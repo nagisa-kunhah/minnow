@@ -49,6 +49,7 @@ void NetworkInterface::send_datagram(const InternetDatagram& dgram,
   (void)next_hop;
   auto it = ARPCacheMap_.find(next_hop.ipv4_numeric());
   if (it == ARPCacheMap_.end()) {
+    blockedData_[next_hop.ipv4_numeric()].push_back(dgram);
     if (!lastARPTime_.count(next_hop.ipv4_numeric()) ||
         timestamp_ - lastARPTime_[next_hop.ipv4_numeric()] >= ARPRetryMS) {
       EthernetFrame broadcastMsg;
@@ -60,7 +61,6 @@ void NetworkInterface::send_datagram(const InternetDatagram& dgram,
                    ip_address_.ipv4_numeric(), {}, next_hop.ipv4_numeric()));
       lastARPTime_[next_hop.ipv4_numeric()] = timestamp_;
       transmit(broadcastMsg);
-      blockedData_[next_hop.ipv4_numeric()].push_back(dgram);
     }
     return;
   }
@@ -87,8 +87,7 @@ void NetworkInterface::recv_frame(const EthernetFrame& frame) {
     if (res) {
       datagrams_received_.push(msg);
     }
-  }
-  if (frame.header.type == EthernetHeader::TYPE_ARP) {
+  } else if (frame.header.type == EthernetHeader::TYPE_ARP) {
     ARPMessage arpmessage;
     bool res = parse(arpmessage, frame.payload);
     if (res) {
@@ -114,6 +113,8 @@ void NetworkInterface::recv_frame(const EthernetFrame& frame) {
         transmit(reply);
       }
     }
+  } else {
+    cerr << "????????????????????wtf" << endl;
   }
 }
 
