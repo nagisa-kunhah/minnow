@@ -71,6 +71,7 @@ void Router::routeOneDatagrams(InternetDatagram& datagram) {
     return;
   }
   datagram.header.ttl--;
+  datagram.header.compute_checksum();
   if (choicedNextHop.has_value()) {
     interface(choicedInterfaceNum)
         ->send_datagram(datagram, choicedNextHop.value());

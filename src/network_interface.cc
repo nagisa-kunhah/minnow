@@ -113,8 +113,6 @@ void NetworkInterface::recv_frame(const EthernetFrame& frame) {
         transmit(reply);
       }
     }
-  } else {
-    cerr << "????????????????????wtf" << endl;
   }
 }
 
@@ -122,7 +120,7 @@ void NetworkInterface::processAQueue(uint32_t arriveIP) {
   if (!blockedData_.count(arriveIP)) {
     return;
   }
-  for (InternetDatagram dgram : blockedData_[arriveIP]) {
+  for (const InternetDatagram& dgram : blockedData_[arriveIP]) {
     assert(ARPCacheMap_.count(arriveIP));
     auto it = ARPCacheMap_.find(arriveIP);
     assert(it != ARPCacheMap_.end());
